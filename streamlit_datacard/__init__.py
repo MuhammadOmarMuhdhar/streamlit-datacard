@@ -43,7 +43,7 @@ else:
 # `declare_component` and call it done. The wrapper allows us to customize
 # our component's API: we can pre-process its input args, post-process its
 # output value, and add a docstring for users.
-def datacard(data, title_field=None, image_field=None, field_types=None, card_width=280, max_height=400, key=None):
+def datacard(data, title_field=None, image_field=None, field_types=None, card_width=280, max_height=400, clickable=False, key=None):
     """Create a datacard component.
 
     Parameters
@@ -60,22 +60,29 @@ def datacard(data, title_field=None, image_field=None, field_types=None, card_wi
         Width of each card in pixels.
     max_height: int, default 400
         Maximum height of cards.
+    clickable: bool, default False
+        Whether cards are clickable.
     key: str or None
         Unique component key.
 
     Returns
     -------
-    None
-        Component is display-only.
+    dict or None
+        If clickable=True, returns the clicked card's data when a card is clicked.
+        Otherwise returns None.
     """
-    _component_func(
+    result = _component_func(
         data=data,
         title_field=title_field,
         image_field=image_field,
         field_types=field_types or {},
         card_width=card_width,
         max_height=max_height,
+        clickable=clickable,
         key=key,
         default=None
     )
+    
+    if clickable and result is not None:
+        return result
     return None

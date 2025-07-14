@@ -17,6 +17,7 @@ interface DataCardProps extends ComponentProps {
     field_types?: { [key: string]: string }
     card_width: number
     max_height: number
+    clickable: boolean
   }
 }
 
@@ -27,7 +28,8 @@ function MyComponent({ args, theme }: DataCardProps): ReactElement {
     image_field, 
     field_types = {}, 
     card_width = 280, 
-    max_height = 400 
+    max_height = 400,
+    clickable = false
   } = args
 
   useEffect(() => {
@@ -47,14 +49,16 @@ function MyComponent({ args, theme }: DataCardProps): ReactElement {
     fontFamily: theme?.font || 'sans-serif',
   }
 
-  const cardStyle: React.CSSProperties = {
+  const getCardStyle = (isClickable: boolean): React.CSSProperties => ({
     border: '1px solid #e5e7eb',
     borderRadius: '12px',
     padding: '20px',
     backgroundColor: theme?.backgroundColor || '#ffffff',
     maxHeight: `${max_height}px`,
     overflow: 'auto',
-  }
+    cursor: isClickable ? 'pointer' : 'default',
+    transition: isClickable ? 'box-shadow 0.2s ease' : 'none',
+  })
 
   const imageStyle: React.CSSProperties = {
     width: '100%',
@@ -143,7 +147,22 @@ function MyComponent({ args, theme }: DataCardProps): ReactElement {
       {data.map((item, index) => (
         <div 
           key={index} 
-          style={cardStyle}
+          style={getCardStyle(clickable)}
+          onMouseEnter={(e) => {
+            if (clickable) {
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (clickable) {
+              e.currentTarget.style.boxShadow = 'none'
+            }
+          }}
+          onClick={() => {
+            if (clickable) {
+              Streamlit.setComponentValue(item)
+            }
+          }}
         >
           {image_field && item[image_field] && (
             <img

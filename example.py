@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_datacard import datacard
 
-st.set_page_config(page_title="Streamlit DataCard Component", layout="centered")
+st.set_page_config(page_title="Streamlit DataCard Component", layout="wide")
 
 # Title
 st.title("🎴 Streamlit DataCard")
@@ -73,7 +73,7 @@ st.markdown("---")
 st.subheader("Examples")
 
 # Example 1: Employee Directory
-st.markdown("**Employee Directory**")
+st.markdown("**Employee Directory (Clickable)**")
 
 if 'sample_data' not in st.session_state:
     st.session_state.sample_data = [
@@ -115,17 +115,43 @@ field_types = {
     "skills": "badge"
 }
 
-datacard(
-    data=st.session_state.sample_data,
-    title_field="name",
-    image_field="image",
-    field_types=field_types,
-    card_width=200,
-    max_height=500,
-    key="employee_cards"
-)
+col1, col2 = st.columns([2, 1])
 
-st.markdown("**Project Tasks**")
+with col1:
+    clicked =datacard(
+        data=st.session_state.sample_data,
+        title_field="name",
+        image_field="image",
+        field_types=field_types,
+        card_width=200,
+        max_height=500,
+        key="employee_cards",
+        clickable=True
+    )
+
+with col2:
+    if clicked:
+        st.subheader(f"Employee Profile: {clicked['name']}")
+
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            st.image(clicked['image'], width=150)
+        with col2:
+            st.write(f"**Role:** {clicked['role']}")
+            st.write(f"**Department:** {clicked['department']}")
+            st.write(f"**Location:** {clicked['location']}")
+            st.write(f"**Email:** {clicked['email']}")
+
+            # Action buttons
+            if st.button("📧 Send Email"):
+                st.success(f"Email sent to {clicked['name']}!")
+            if st.button("📅 Schedule Meeting"):
+                st.success(f"Meeting scheduled with {clicked['name']}!")
+
+    else:
+        st.subheader("👈 Click on an employee card to view their profile")
+
+st.markdown("**Project Tasks (Non-Clickable)**")
 
 tasks = [
     {
@@ -154,63 +180,14 @@ tasks = [
     }
 ]
 
-datacard(
-    data=tasks,
-    title_field="task", 
-    field_types={"priority": "badge", "status": "badge"},
-    card_width=200,
-    max_height=250,
-    key="tasks"
-)
+col1, col2 = st.columns([2, 1])
 
-st.markdown("**Product Catalog**")
-
-products = [
-    {
-        "name": "Wireless Headphones",
-        "price": "$199.99",
-        "category": "Electronics", 
-        "rating": "⭐⭐⭐⭐⭐",
-        "stock": "In Stock",
-        "description": "Premium noise-cancelling headphones",
-        "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=200&fit=crop&crop=center"
-    },
-    {
-        "name": "Smart Watch",
-        "price": "$299.99", 
-        "category": "Wearables",
-        "rating": "⭐⭐⭐⭐",
-        "stock": "Low Stock",
-        "description": "Advanced fitness tracking",
-        "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=200&fit=crop&crop=center"
-    },
-    {
-        "name": "Laptop Stand",
-        "price": "$49.99",
-        "category": "Accessories",
-        "rating": "⭐⭐⭐⭐⭐",
-        "stock": "In Stock",
-        "description": "Ergonomic workspace solution",
-        "image": "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300&h=200&fit=crop&crop=center"
-    },
-    {
-        "name": "Bluetooth Speaker",
-        "price": "$79.99",
-        "category": "Electronics",
-        "rating": "⭐⭐⭐⭐",
-        "stock": "In Stock",
-        "description": "Portable wireless speaker with bass",
-        "image": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&h=200&fit=crop&crop=center"
-    }
-]
-
-datacard(
-    data=products,
-    title_field="name",
-    image_field="image",
-    field_types={"category": "badge", "stock": "badge"},
-    card_width=220,
-    max_height=500,
-    key="products"
-)
-
+with col1:
+    datacard(
+        data=tasks,
+        title_field="task", 
+        field_types={"priority": "badge", "status": "badge"},
+        card_width=200,
+        max_height=250,
+        key="tasks"
+    )
